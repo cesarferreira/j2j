@@ -15,11 +15,14 @@ Gem::Specification.new do |spec|
     Convert any Files.json to corresponding Classe.java files
   EOF
 
-  spec.extra_rdoc_files = ['README', 'README.md']
+  #spec.extra_rdoc_files = ['README', 'README.md']
+
   spec.post_install_message = <<-EOF
     Thanks for installing!
     Head here for documentation: https://github.com/cesarferreira/j2j
   EOF
+
+  spec.metadata = { "issue_tracker" => "https://example/issues" }
 
   spec.homepage      = "https://github.com/cesarferreira/j2j"
 
