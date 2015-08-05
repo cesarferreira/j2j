@@ -120,12 +120,7 @@ def to_java_field_name(field_name)
   separator = false
   first = true
   leave_lowercase = false
-  if @config.field_prefix != ""
-    field_name = @config.field_prefix + "_" + field_name
-  end
-  if @config.field_suffix != ""
-    field_name = field_name + "_" + @config.field_suffix
-  end
+
   field_name.each_char do |c|
     if separator
       if leave_lowercase
@@ -199,23 +194,6 @@ end
 
 
 ##
-## ADD CLASS PREFIX AND SUFFIX
-##
-def add_class_prefix_and_suffix(class_name)
-  if class_name == "String" || class_name == "Double" || class_name == "Long" || class_name == "Boolean"
-    return class_name
-  end
-  if @config.class_prefix != ""
-    class_name = @config.class_prefix + class_name
-  end
-  if @config.class_suffix != ""
-    class_name = class_name + @config.class_suffix
-  end
-  return class_name
-end
-
-
-##
 ## JAVA CLASS TO BE OUTPUTED
 ##
 def java_class_output(class_name, parent)
@@ -223,9 +201,6 @@ def java_class_output(class_name, parent)
   proper_class_name = to_java_class_name(class_name)
   if @java_lists[class_name]
     proper_class_name.chop! if @do_chop
-  end
-  if class_name != @config.top_level_class
-    proper_class_name = add_class_prefix_and_suffix(proper_class_name)
   end
 
   field_list = ""
@@ -238,12 +213,10 @@ def java_class_output(class_name, parent)
     @java_fields[class_name].each do |field|
       field_type = @field_info[field].type
       method_name = to_java_method_name(field)
-      method_name = add_class_prefix_and_suffix(method_name)
       java_field = to_java_field_name(field)
       if @java_fields[field]
         field_type = to_java_class_name(field)
         method_name = to_java_method_name(field_type)
-        method_name = add_class_prefix_and_suffix(method_name)
       end
       if (@java_lists[field] and @java_lists[field] == class_name)
         if @field_info[field].array_type
@@ -251,20 +224,15 @@ def java_class_output(class_name, parent)
         elsif @do_chop
           field_type.chop!
         end
-        field_type = add_class_prefix_and_suffix(field_type)
         field_type = "List<#{field_type}>"
         list_import = "import java.util.List;"
-      else
-        field_type = add_class_prefix_and_suffix(field_type)
+
       end
       json_annotation = ""
       if java_field != field
         json_property_import = @config.json_property_import
         json_annotation = "  @SerializedName(\"#{field}\")\n"
-        if field == '_rev' or field == '_id'
-          json_annotation = json_annotation + "  @JsonSerialize(include = Inclusion.NON_EMPTY)\n"
-          json_serialize_import = @config.json_serialize_import
-        end
+
       end
       field_list = field_list + json_annotation + "  private #{field_type} #{java_field};\n"
       getters_and_setters = getters_and_setters + <<GS
@@ -317,6 +285,8 @@ end
 ## PARSE THE INCOMING PARAMS
 ##
 def parse_args(path, params)
+
+  ############################## TODO: analise path
 
   @config.json_file = path
   @config.package = params[:package]
