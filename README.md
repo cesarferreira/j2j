@@ -1,4 +1,4 @@
-# j2j
+# j2j [![Gem Version](https://badge.fury.io/rb/j2j.svg)](http://badge.fury.io/rb/j2j)
 
 Convert any **Files.json** to corresponding **Classe.java** files
 
