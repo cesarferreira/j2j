@@ -1,27 +1,45 @@
 require 'thor'
 require 'colorize'
+require 'j2j/converter'
+require 'j2j/version'
+require 'pry'
+require 'thor/group'
+
 
 module J2j
   class Cli < Thor
 
+    include Thor::Actions
 
-
-
-    desc "hello NAME", "say hello to NAME"
-    long_desc <<-LONGDESC
-      `cli hello` will print out a message to a person of your
-      choosing. #{'cena'.red}
-
-      You can optionally specify a second parameter, which will print
-      out a from message as well.
-
-      #{'> $ cli hello "Yehuda Katz" "Carl Lerche"'.green}
-      \x5#{'> from: Carl Lerche'.green}
-    LONGDESC
-    def hello(name, from=nil)
-      puts "from: #{from}" if from
-      puts "Hello #{name}"
+    no_commands do
+      def log(str)
+        puts str if options[:verbose]
+      end
     end
+
+
+    def self.source_root
+      File.dirname(__FILE__)
+    end
+
+    desc 'path/to/file.json', 'indicate the path to the file.json'
+    class_option :root_class, :aliases => '-r', :default => 'Example.java'
+    class_option :package, :aliases => '-p', :default => 'com.example'
+    class_option :output, :aliases => '-o', :description => 'Number to call', :default => 'out'
+    def json(path_to_json)
+      puts "JSON: #{path_to_json}"
+
+      convert(path_to_json, options)
+
+    end
+
+
+
+    # map %w[--version -v] => :__print_version
+    # desc "--version, -v", "print the version"
+    # def __print_version
+    #   puts J2j::VERSION
+    # end
 
   end
 end
