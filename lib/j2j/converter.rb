@@ -1,14 +1,11 @@
 require 'json'
-require 'pry'
+
+require 'active_support'
+require 'active_support/inflector'
 
 require_relative './configurator'
 require_relative './field_details'
 
-
-@java_classes = {}
-@java_fields = {}
-@java_lists = {}
-@field_info = {}
 
 ##
 ## GET JAVA TYPES
@@ -25,13 +22,13 @@ def get_java_type(value, field_details, key)
     inner_value = get_java_type(value[0], field_details, key)
     if inner_value == @config.unknown_class
       inner_value = to_java_class_name(key)
-      if @do_chop
-        inner_value.chop!
-      end
-      inner_value = add_class_prefix_and_suffix(inner_value)
+      # if @do_chop
+      #   inner_value.chop!
+      # end
       setup_data(value[0], key)
       field_details.write_class_file = true
     end
+    binding.pry
     java_type = "List<" + inner_value + ">"
   elsif value.is_a?(String)
     java_type = "String"
@@ -107,7 +104,8 @@ def to_java_class_name(class_name)
     end
   end
 
-  return java_class_name
+  singular_class_name = java_class_name.singularize
+  return singular_class_name
 end
 
 
@@ -199,9 +197,6 @@ end
 def java_class_output(class_name, parent)
 
   proper_class_name = to_java_class_name(class_name)
-  if @java_lists[class_name]
-    proper_class_name.chop! if @do_chop
-  end
 
   field_list = ""
   list_import = ""
@@ -214,15 +209,15 @@ def java_class_output(class_name, parent)
       field_type = @field_info[field].type
       method_name = to_java_method_name(field)
       java_field = to_java_field_name(field)
+
       if @java_fields[field]
         field_type = to_java_class_name(field)
         method_name = to_java_method_name(field_type)
       end
+
       if (@java_lists[field] and @java_lists[field] == class_name)
         if @field_info[field].array_type
           field_type = @field_info[field].array_type
-        elsif @do_chop
-          field_type.chop!
         end
         field_type = "List<#{field_type}>"
         list_import = "import java.util.List;"
@@ -234,7 +229,11 @@ def java_class_output(class_name, parent)
         json_annotation = "  @SerializedName(\"#{field}\")\n"
 
       end
-      field_list = field_list + json_annotation + "  private #{field_type} #{java_field};\n"
+
+      json_serialize_import = @config.json_serialize_import
+
+
+      field_list = field_list + json_annotation + "  private #{field_type} #{java_field};\n\n"
       getters_and_setters = getters_and_setters + <<GS
 
   public #{field_type} get#{method_name}() {
@@ -249,7 +248,6 @@ GS
   end
 
   doc = <<JCO
-#{@java_class_header}
 package #@package;
 
 #{list_import}
@@ -275,7 +273,9 @@ JCO
 
   # don't write java file files "primitive" array/list fields
   if write_file(@field_info[class_name]) == true
-    File.open("#{@config.output_directory}/#{proper_class_name}.java", 'w') {|f| f.write(doc) }
+    fileName = "#{@config.output_directory}/#{proper_class_name}.java"
+    File.open(fileName, 'w') {|f| f.write(doc) }
+    puts "Creating.... #{fileName.green}"
   end
 
 end
@@ -286,12 +286,31 @@ end
 ##
 def parse_args(path, params)
 
-  ############################## TODO: analise path
-
   @config.json_file = path
   @config.package = params[:package]
   @config.top_level_class = params[:root_class].gsub(/.java/,'')
   @config.output_directory  = params[:output]
+
+end
+
+def valid_json?(json)
+  begin
+    JSON.parse(IO.read(json))
+    return true
+  rescue Exception => e
+    return false
+  end
+end
+
+def print_intro
+  puts "\nThis are the settings you wanted:"
+
+  puts "  JSON file: #{@config.json_file.green}"
+  puts "  Java package: #{@config.package.green}"
+  puts "  Java top level class: #{@config.top_level_class.green}"
+  puts "  Output directory: #{@config.output_directory.green}"
+
+  puts "\n"
 
 end
 
@@ -310,18 +329,22 @@ def convert(path, options)
 
   parse_args(path, options)
 
-  puts "Using JSON file: #{@config.json_file.green}"
-  puts "Using Java package: #{@config.package.green}"
-  puts "Using Java top level class: #{@config.top_level_class.green}"
-  puts "Using output directory: #{@config.output_directory.green}"
+  if !File.exists?(@config.json_file)
+    puts "The file '#{@config.json_file.red}' does not exist!"
+    exit -1
+  else
+    if !valid_json?(@config.json_file)
+      puts "'#{@config.json_file.red}' is not a valid json file!"
+      exit -1
+    end
+  end
+
+
+  print_intro()
+
 
   @package = @config.package
 
-  if !File.exists?(@config.json_file)
-    puts "JSON file: #{@config.json_file} does not exist!"
-    puts "Try -h flag for help"
-    exit -1
-  end
 
   json_file_contents = IO.read(@config.json_file)
   json = JSON.parse(json_file_contents)

@@ -1,36 +1,76 @@
-# J2j
+# j2j
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/j2j`. To experiment with that code, run `bin/console` for an interactive prompt.
+Convert any **Files.json** to corresponding **Classe.java** files
 
-TODO: Delete this and the text above, and describe your gem
 
 ## Installation
-
-Add this line to your application's Gemfile:
-
-```ruby
-gem 'j2j'
-```
-
-And then execute:
-
-    $ bundle
-
-Or install it yourself as:
 
     $ gem install j2j
 
 ## Usage
 
-TODO: Write usage instructions here
+    $ j2j ~/sample.json -o ~/destination_folder
 
-## Development
+> `sample.json`:
 
-After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake false` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
+```json
+{
+  "total": 2,
+  "people": [
+    { "name": "jose" },
+    { "name": "maria" }
+  ]
+}
+```
 
-To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and tags, and push the `.gem` file to [rubygems.org](https://rubygems.org).
+Lets look at the `~/destination_folder`...
+
+The files `Sample.java` and `Person.java` were created
+
+> `Sample.java`:
+
+```java
+public class Sample {
+
+  private Long total;
+  private List<Person> people;
+
+  public Long getTotal() { return total; }
+  public void setTotal(Long total) { this.total = total; }
+  public List<Person> getPerson() { return people; }
+  public void setPerson(List<Person> people) { this.people = people; }
+
+}
+```
+
+> `Person.java`:
+
+```java
+public class Person {
+
+  private String name;
+
+  public String getName() { return name; }
+  public void setName(String name) { this.name = name; }
+
+}
+```
+
+... and you're golden :)
+
+# Advanced
+
+| Param        | Shortcut  | Default value | Usage |
+|:------------:|:---------:| :------------:|:------------|
+| root_class   | -r        | Example.java  | $ **j2j ~/file.json -r Person** |
+| package      | -p        | com.example   | $ **j2j ~/file.json -p com.company** |
+| output       | -o        | out           | $ **j2j ~/file.json -o src/** |
+
+Complete example:
+> $ j2j ~/file.json -r Person -p com.compay -o src/
+
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/j2j.
+Bug reports and pull requests are welcome on GitHub at https://github.com/cesarferreira/j2j.
 

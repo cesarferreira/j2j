@@ -10,8 +10,17 @@ Gem::Specification.new do |spec|
   spec.email         = ["cesar.manuel.ferreira@gmail.com"]
 
   spec.license       = 'MIT'
-  spec.summary       = %q{Convert any file.json to Classe.java files}
-  spec.description   = %q{Convert any file.json to Classe.java files}
+  spec.summary       = %q{Convert any Files.json to corresponding Classe.java files}
+  spec.description = <<-EOF
+    Convert any Files.json to corresponding Classe.java files
+  EOF
+
+  spec.extra_rdoc_files = ['README', 'README.md']
+  spec.post_install_message = <<-EOF
+    Thanks for installing!
+    Head here for documentation: https://github.com/cesarferreira/j2j
+  EOF
+
   spec.homepage      = "https://github.com/cesarferreira/j2j"
 
   spec.files         = `git ls-files -z`.split("\x0").reject { |f| f.match(%r{^(test|spec|features)/}) }
@@ -24,11 +33,11 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "guard"
   spec.add_development_dependency "guard-rspec"
   spec.add_development_dependency "coveralls"
+  spec.add_development_dependency 'pry-byebug', '~> 3.1'
 
-  spec.add_dependency 'pry-byebug', '~> 3.1'
   spec.add_dependency 'thor', '~> 0.19.1'
   spec.add_dependency 'colorize',  '~> 0.7'
   spec.add_dependency 'json', '~> 1.8.3'
-
+  spec.add_dependency 'activesupport', '~> 4.2'
 
 end
