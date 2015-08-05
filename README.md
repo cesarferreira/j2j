@@ -2,6 +2,9 @@
 
 Convert any **Files.json** to corresponding **Classe.java** files
 
+<p align="center">
+<img src="https://raw.githubusercontent.com/cesarferreira/j2j/master/extras/terminal.gif" width="100%" />
+</p>
 
 ## Installation
 

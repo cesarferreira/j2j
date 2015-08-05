@@ -22,9 +22,6 @@ def get_java_type(value, field_details, key)
     inner_value = get_java_type(value[0], field_details, key)
     if inner_value == @config.unknown_class
       inner_value = to_java_class_name(key)
-      # if @do_chop
-      #   inner_value.chop!
-      # end
       setup_data(value[0], key)
       field_details.write_class_file = true
     end
@@ -287,9 +284,9 @@ end
 def parse_args(path, params)
 
   @config.json_file = path
-  @config.package = params[:package]
+  @config.package = params[:package].gsub(/\.$/, '')
   @config.top_level_class = params[:root_class].gsub(/.java/,'')
-  @config.output_directory  = params[:output]
+  @config.output_directory  = params[:output].gsub(/\/$/, '')
 
 end
 
@@ -303,7 +300,7 @@ def valid_json?(json)
 end
 
 def print_intro
-  puts "\nThis are the settings you wanted:"
+  puts "\nCreating with:"
 
   puts "  JSON file: #{@config.json_file.green}"
   puts "  Java package: #{@config.package.green}"
@@ -351,6 +348,6 @@ def convert(path, options)
 
   @java_classes[@config.top_level_class] = "TOP_LEVEL_CLASS"
   setup_data(json, @config.top_level_class)
-  @java_classes.each { |class_name,parent| java_class_output(class_name, parent) }
+  @java_classes.each { |class_name, parent| java_class_output(class_name, parent) }
 
 end
