@@ -2,7 +2,6 @@ require 'thor'
 require 'colorize'
 require 'j2j/converter'
 require 'j2j/version'
-require 'pry'
 require 'thor/group'
 
 
