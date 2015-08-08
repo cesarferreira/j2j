@@ -230,7 +230,7 @@ def java_class_output(class_name, parent)
       json_serialize_import = @config.json_serialize_import
 
 
-      field_list = field_list + json_annotation + "  private #{field_type} #{java_field};\n\n"
+      field_list = field_list + json_annotation + "  private #{field_type} #{java_field};\n"
       getters_and_setters = getters_and_setters + <<GS
 
   public #{field_type} get#{method_name}() {
