@@ -13,7 +13,7 @@ class Configurator
     # In which case, UNKNOWN will be used. This will prohibit the class from compiling.
     self.unknown_class = "Object"
 
-    self.json_property_import = "import java.util.date;"
+    self.json_property_import = "import java.util.Date;"
     self.json_serialize_import = "import com.google.gson.annotations.SerializedName;"
 
   end
