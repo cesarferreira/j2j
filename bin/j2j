@@ -1,6 +1,5 @@
 #!/usr/bin/env ruby
 
-require "bundler/setup"
 require "j2j"
 
 J2j::Cli.start(ARGV.dup.unshift("json"))
