@@ -15,9 +15,9 @@ def get_java_type(value, field_details, key)
   java_type = @config.unknown_class
 
   if value.is_a?(Fixnum)
-    java_type = "Long"
+    java_type = "long"
   elsif value.is_a?(Float)
-    java_type = "Double"
+    java_type = "double"
   elsif value.is_a?(Array)
     inner_value = get_java_type(value[0], field_details, key)
     if inner_value == @config.unknown_class
@@ -30,7 +30,7 @@ def get_java_type(value, field_details, key)
   elsif value.is_a?(String)
     java_type = "String"
   elsif value.is_a?(TrueClass) || value.is_a?(FalseClass)
-    java_type = "Boolean"
+    java_type = "boolean"
   end
   return java_type;
 end
